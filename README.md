@@ -7,5 +7,5 @@ With a little modification, the same extraction can be used on other Sqlite3 dat
 
 #### Usage:
 ```cmd
-python3 dnotes_to_md.py <database file path> [<output folder name>]
+python3 dnotes_to_md.py <database file path> [optional: <output folder name>]
 ```
