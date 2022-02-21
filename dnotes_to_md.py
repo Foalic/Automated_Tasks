@@ -89,7 +89,7 @@ def main(database_path, outputfolder=None):
 # For Command line input
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        sys.stdout.write('------------\nUsage:\ndb_to_md.py <database file path> [<output folder name>]\n------------')
+        sys.stdout.write('------------\nUsage:\ndnotes_to_md.py <database file path> [<output folder name>]\n------------')
 
     else:
         if len(sys.argv) == 3:

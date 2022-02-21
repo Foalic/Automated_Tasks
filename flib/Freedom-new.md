@@ -1,3 +1,0 @@
-# Freedom...
-
-* Is this freedom?
