@@ -47,15 +47,15 @@ def create_new_file(current_working_directory):
                 new_note.write(note)
 
 def main(filepath, outputfolder=None):
-    global cursor
+    #global cursor
     current_working_directory = os.getcwd()
     if outputfolder is not None:
         outputfolder_path = current_working_directory + '\\' + outputfolder
     else:
         outputfolder_path = current_working_directory
 
-    connection = sqlite3.connect(filepath)
-    cursor = connection.cursor()
+    # connection = sqlite3.connect(filepath)
+    # cursor = connection.cursor()
 
     create_new_file(outputfolder_path)
 
@@ -68,6 +68,8 @@ if __name__ == "__main__":
         print(sys.argv)
 
     else:
+        connection = sqlite3.connect(sys.argv[1])
+        cursor = connection.cursor()
         if len(sys.argv) == 3:
             main(sys.argv[1], sys.argv[2])
         else:
