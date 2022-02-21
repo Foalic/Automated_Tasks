@@ -40,10 +40,8 @@ def create_new_file(current_working_directory):
             note = entry[2]
             cleaned_title = create_file_title(note)
             book_name = get_specific_book_name(entry)
-            try:
+            if not os.path.isdir(os.getcwd() + f"\\{book_name}"):
                 os.mkdir(book_name)
-            except:
-                pass
 
             with open(f'{current_working_directory}\\{book_name}\\{cleaned_title}.md', 'w') as new_note:
                 new_note.write(note)
