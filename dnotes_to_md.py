@@ -23,25 +23,39 @@ def get_specific_book_name(entry):
             book_name = book
             return book_name
 
+# Modify outputfolder name if necessary
+def prepare_outputfolder(outputfolder):
+    bad_chars = [".", "\\", "/"]
+    
+    for char in bad_chars:
+        if char in outputfolder:
+            outputfolder = outputfolder.replace(char, "")
+
+    return outputfolder
+
 def create_file_title(note):
     first_newline = note.find('\n')
     title = note[:first_newline].strip()
 
     for char in title:
-        if char in string.punctuation:
+        if char in (string.punctuation + " "):
             title = title.replace(char, '')
         cleaned_title = title
 
     return cleaned_title
 
 # Getting notes
-def create_new_file(current_working_directory):
+def create_new_file(current_working_directory, outputfolder):
     cursor.execute('SELECT * FROM notes')
     for index,entry in enumerate(cursor.fetchall()):
         if entry[8] == 0:
             note = entry[2]
             cleaned_title = create_file_title(note)
-            book_name = get_specific_book_name(entry)
+
+            if outputfolder:
+                book_name = prepare_outputfolder(outputfolder)
+            else:
+                book_name = get_specific_book_name(entry)
 
             # Check if directory exists, and create if not
             if not os.path.isdir(os.getcwd() + f"\\{book_name}"):
@@ -55,18 +69,14 @@ def create_new_file(current_working_directory):
 
 def main(filepath, outputfolder=None):
     current_working_directory = os.getcwd()
-    if outputfolder is not None:
-        outputfolder_path = current_working_directory + '\\' + outputfolder
-    else:
-        outputfolder_path = current_working_directory
+    outputfolder_path = current_working_directory
 
-    create_new_file(outputfolder_path)
+    create_new_file(outputfolder_path, outputfolder)
 
 # For Command line input
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         sys.stdout.write('------------\nUsage:\ndb_to_md.py <database file path> [<output folder name>]\n------------')
-        print(sys.argv)
 
     else:
         connection = sqlite3.connect(sys.argv[1])
