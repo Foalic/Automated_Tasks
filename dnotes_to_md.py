@@ -26,10 +26,12 @@ def get_specific_book_name(entry):
 def create_file_title(note):
     first_newline = note.find('\n')
     title = note[:first_newline].strip()
-    for char in string.punctuation:
-        if char in title:
-            title = title.replace(char, '_')
-    cleaned_title = title.replace(' ', '_')
+
+    for char in title:
+        if char in string.punctuation:
+            title = title.replace(char, '')
+        cleaned_title = title
+
     return cleaned_title
 
 # Getting notes
@@ -40,26 +42,25 @@ def create_new_file(current_working_directory):
             note = entry[2]
             cleaned_title = create_file_title(note)
             book_name = get_specific_book_name(entry)
+
+            # Check if directory exists, and create if not
             if not os.path.isdir(os.getcwd() + f"\\{book_name}"):
                 os.mkdir(book_name)
+            # Check if file already exists and append if it does
+            if os.path.isfile(f'{current_working_directory}\\{book_name}\\{cleaned_title}.md'):
+                cleaned_title = cleaned_title + "-new"
 
             with open(f'{current_working_directory}\\{book_name}\\{cleaned_title}.md', 'w') as new_note:
                 new_note.write(note)
 
 def main(filepath, outputfolder=None):
-    #global cursor
     current_working_directory = os.getcwd()
     if outputfolder is not None:
         outputfolder_path = current_working_directory + '\\' + outputfolder
     else:
         outputfolder_path = current_working_directory
 
-    # connection = sqlite3.connect(filepath)
-    # cursor = connection.cursor()
-
     create_new_file(outputfolder_path)
-
-    connection.close()
 
 # For Command line input
 if __name__ == "__main__":
@@ -70,7 +71,10 @@ if __name__ == "__main__":
     else:
         connection = sqlite3.connect(sys.argv[1])
         cursor = connection.cursor()
+
         if len(sys.argv) == 3:
             main(sys.argv[1], sys.argv[2])
         else:
             main(sys.argv[1])
+
+        connection.close()
