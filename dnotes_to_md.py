@@ -5,6 +5,7 @@ import os
 import sys
 import string
 
+
 def make_dict_of_books():
     cursor.execute('SELECT * FROM books')
     books_dict = dict()
@@ -15,6 +16,7 @@ def make_dict_of_books():
             books_dict[book_uuid] = book_name
     return books_dict
 
+
 def get_specific_book_name(entry):
     book_uuid = entry[1]
     books_dict = make_dict_of_books()
@@ -22,6 +24,7 @@ def get_specific_book_name(entry):
         if uuid == book_uuid:
             book_name = book
             return book_name
+
 
 # Modify outputfolder name if necessary
 def prepare_outputfolder(outputfolder):
@@ -33,6 +36,7 @@ def prepare_outputfolder(outputfolder):
 
     return outputfolder
 
+
 def create_file_title(note):
     first_newline = note.find('\n')
     title = note[:first_newline].strip()
@@ -43,6 +47,7 @@ def create_file_title(note):
         cleaned_title = title
 
     return cleaned_title
+
 
 # Getting notes
 def create_new_file(database_path, current_working_directory, outputfolder):
@@ -70,14 +75,16 @@ def create_new_file(database_path, current_working_directory, outputfolder):
 
                 with open(f'{current_working_directory}\\{book_name}\\{cleaned_title}.md', 'w') as new_note:
                     new_note.write(note)
-                    
+
     connection.close()
+
 
 def main(database_path, outputfolder=None):
     current_working_directory = os.getcwd()
     outputfolder_path = current_working_directory
 
     create_new_file(database_path, outputfolder_path, outputfolder)
+
 
 # For Command line input
 if __name__ == "__main__":
