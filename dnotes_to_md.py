@@ -26,7 +26,7 @@ def get_specific_book_name(entry):
 # Modify outputfolder name if necessary
 def prepare_outputfolder(outputfolder):
     bad_chars = [".", "\\", "/"]
-    
+
     for char in bad_chars:
         if char in outputfolder:
             outputfolder = outputfolder.replace(char, "")
@@ -45,33 +45,39 @@ def create_file_title(note):
     return cleaned_title
 
 # Getting notes
-def create_new_file(current_working_directory, outputfolder):
-    cursor.execute('SELECT * FROM notes')
-    for index,entry in enumerate(cursor.fetchall()):
-        if entry[8] == 0:
-            note = entry[2]
-            cleaned_title = create_file_title(note)
+def create_new_file(database_path, current_working_directory, outputfolder):
+    with  sqlite3.connect(database_path) as connection:
 
-            if outputfolder:
-                book_name = prepare_outputfolder(outputfolder)
-            else:
-                book_name = get_specific_book_name(entry)
+        cursor = connection.cursor()
+        cursor.execute('SELECT * FROM notes')
 
-            # Check if directory exists, and create if not
-            if not os.path.isdir(os.getcwd() + f"\\{book_name}"):
-                os.mkdir(book_name)
-            # Check if file already exists and append if it does
-            if os.path.isfile(f'{current_working_directory}\\{book_name}\\{cleaned_title}.md'):
-                cleaned_title = cleaned_title + "-new"
+        for index,entry in enumerate(cursor.fetchall()):
+            if entry[8] == 0:
+                note = entry[2]
+                cleaned_title = create_file_title(note)
 
-            with open(f'{current_working_directory}\\{book_name}\\{cleaned_title}.md', 'w') as new_note:
-                new_note.write(note)
+                if outputfolder:
+                    book_name = prepare_outputfolder(outputfolder)
+                else:
+                    book_name = get_specific_book_name(entry)
 
-def main(filepath, outputfolder=None):
+                # Check if directory exists, and create if not
+                if not os.path.isdir(os.getcwd() + f"\\{book_name}"):
+                    os.mkdir(book_name)
+                # Check if file already exists and append if it does
+                if os.path.isfile(f'{current_working_directory}\\{book_name}\\{cleaned_title}.md'):
+                    cleaned_title = cleaned_title + "-new"
+
+                with open(f'{current_working_directory}\\{book_name}\\{cleaned_title}.md', 'w') as new_note:
+                    new_note.write(note)
+                    
+    connection.close()
+
+def main(database_path, outputfolder=None):
     current_working_directory = os.getcwd()
     outputfolder_path = current_working_directory
 
-    create_new_file(outputfolder_path, outputfolder)
+    create_new_file(database_path, outputfolder_path, outputfolder)
 
 # For Command line input
 if __name__ == "__main__":
@@ -79,12 +85,7 @@ if __name__ == "__main__":
         sys.stdout.write('------------\nUsage:\ndb_to_md.py <database file path> [<output folder name>]\n------------')
 
     else:
-        connection = sqlite3.connect(sys.argv[1])
-        cursor = connection.cursor()
-
         if len(sys.argv) == 3:
             main(sys.argv[1], sys.argv[2])
         else:
             main(sys.argv[1])
-
-        connection.close()
